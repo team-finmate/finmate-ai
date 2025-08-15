@@ -1,0 +1,32 @@
+[
+  {
+    "transaction_id": "TXN20250101001",
+    "date": "2025-01-01",
+    "time": "01:30:00",
+    "merchant": "배달의민족 BBQ치킨",
+    "category": "배달음식",
+    "amount": 23000,
+    "payment_method": "신용카드",
+    "balance": 977000
+  },
+  {
+    "transaction_id": "TXN20250101002",
+    "date": "2025-01-01",
+    "time": "14:00:00",
+    "merchant": "CGV 강남점",
+    "category": "문화/여가",
+    "amount": 28000,
+    "payment_method": "신용카드",
+    "balance": 949000
+  },
+  {
+    "transaction_id": "TXN20250101003",
+    "date": "2025-01-01",
+    "time": "16:30:00",
+    "merchant": "스타벅스 강남역점",
+    "category": "카페",
+    "amount": 6500,
+    "payment_method": "신용카드",
+    "balance": 942500
+  }
+]

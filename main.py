@@ -1,17 +1,18 @@
 
 # main.py
 from fastapi import FastAPI
-from routers import transactions
+from routers import transactions, products
 
 # FastAPI 애플리케이션 인스턴스 생성
 app = FastAPI(
     title="FinMate AI",
-    description="결제 내역 분석 API",
+    description="결제 내역 분석 및 금융상품 추천 API",
     version="1.0.0"
 )
 
 # 라우터 연결
 app.include_router(transactions.router)
+app.include_router(products.router)
 
 # 루트 경로 ("/")에 대한 GET 요청 핸들러
 @app.get("/")

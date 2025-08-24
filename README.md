@@ -33,6 +33,23 @@ FinMate AI는 개인의 결제내역을 **16개 카테고리**로 분석하고, 
 | **🆕 소비습관 피드백** | 개인화된 지출 팁, 목표 달성도, 개선 가이드 |
 | **🆕 월간 비교 분석** | 이전 달 대비 증가/감소 상위 카테고리 |
 
+### 🏦 **금융상품 추천 시스템** 🆕
+
+사용자의 소비 패턴과 재정 상황을 분석하여 **정기예금**과 **적금** 상품을 추천합니다.
+
+| 추천 기능 | 세부 내용 |
+|---------|-----------|
+| **맞춤형 상품 추천** | 위험 성향, 절약 능력, 투자 목표 기반 추천 |
+| **수익률 계산** | 실제 예상 이자 및 수익률 제공 |
+| **포트폴리오 제안** | 정기예금/적금 최적 비율 제안 |
+| **AI 기반 분석** | OpenAI 활용한 개인화된 투자 전략 |
+
+#### 🎯 **추천 알고리즘**
+- **위험 성향 분석**: 소비 패턴 기반 안전/보통/적극 성향 분류
+- **절약 능력 평가**: 3단계 절약 제안에서 도출된 가용 자금 계산
+- **상품 점수화**: 금리, 접근성, 우대 조건 등 종합 평가
+- **맞춤 추천**: 개인 상황에 최적화된 상위 3개 상품 선별
+
 ### 💡 **3단계 절약 제안 시스템**
 
 사용자가 자신의 상황에 맞게 **선택할 수 있는** 3가지 절약 레벨을 제공합니다.
@@ -154,11 +171,18 @@ finmate-ai/
 ├── 📁 services/
 │   ├── data_processor.py      # 거래 데이터 전처리 & 카테고리 분류
 │   ├── openai_service.py      # OpenAI GPT-4 연동 & 분석
-│   └── saving_service.py      # 3단계 절약 제안 생성 엔진
+│   ├── saving_service.py      # 3단계 절약 제안 생성 엔진
+│   ├── product_recommendation_service.py  # 🆕 금융상품 추천 엔진
+│   └── ai_product_service.py  # 🆕 AI 기반 상품 추천
 ├── 📁 routers/
-│   └── transactions.py        # RESTful API 엔드포인트
+│   ├── transactions.py        # 소비 분석 API 엔드포인트
+│   └── products.py           # 🆕 금융상품 추천 API
 ├── 📁 schemas/
-│   └── transactions.py        # 데이터 모델 & 응답 스키마
+│   ├── transactions.py        # 소비 분석 데이터 모델
+│   └── products.py           # 🆕 금융상품 데이터 모델
+├── 📁 data/
+│   ├── time_deposits.json     # 🆕 정기예금 상품 데이터
+│   └── saving_products.json  # 🆕 적금 상품 데이터
 ├── 🔧 main.py                 # FastAPI 앱 실행
 ├── 📋 requirements.txt        # 의존성 패키지
 └── 📖 README.md              # 프로젝트 문서
@@ -354,6 +378,104 @@ Content-Type: application/json
 ```
 
 </details>
+
+---
+
+## 🏦 금융상품 추천 API 🆕
+
+사용자의 소비 분석 결과를 바탕으로 정기예금과 적금 상품을 추천합니다.
+
+### **요청 방법**
+
+```bash
+curl -X POST "http://localhost:8000/recommend-products" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "total_spent": 2500000,
+       "category_breakdown": {...},
+       "saving_suggestions": {...},
+       "monthly_income": 4000000,
+       "current_savings": 10000000,
+       "investment_period_preference": "중기",
+       "risk_preference": "보통",
+       "financial_goals": ["비상자금", "내집마련"]
+     }'
+```
+
+### **응답 예시**
+
+<details>
+<summary>🏦 <strong>금융상품 추천 응답 보기</strong></summary>
+
+```json
+{
+  "user_profile_analysis": "사용자의 월 지출액은 2,500,000원이며, 수입 대비 62.5% 지출하는 보통 성향의 투자자입니다. 절약 가능 금액은 약 750,000원으로 분석되며, 비상자금, 내집마련 등의 목표를 위한 금융상품 가입을 권장합니다.",
+  "recommended_time_deposits": [
+    {
+      "product": {
+        "금융회사": "동양저축은행",
+        "상품명": "정기예금(비대면)",
+        "기간개월": 12,
+        "세전우대합계_num": 0.0652,
+        "최소가입금액": 100000,
+        "권장예치금액": 50000000
+      },
+      "recommendation_score": 73.1,
+      "recommended_amount": 10000000,
+      "expected_interest": 652000,
+      "reasons": [
+        {
+          "reason_title": "높은 금리 혜택",
+          "reason_detail": "최대 연 6.52%의 우대금리로 높은 수익 기대",
+          "benefit_description": "시중 평균보다 높은 금리로 안정적인 수익 창출 가능"
+        }
+      ],
+      "fit_analysis": "균형 잡힌 투자 성향에 적합한 상품으로, 안정성과 수익성을 모두 고려한 선택입니다."
+    }
+  ],
+  "recommended_savings": [
+    {
+      "product": {
+        "금융회사": "KB국민은행",
+        "상품명": "KB Star 적금",
+        "기간개월": 24,
+        "세전우대합계_num": 0.072,
+        "최소납입금액": 50000,
+        "권장월납입금액": 500000
+      },
+      "recommendation_score": 75.8,
+      "recommended_monthly_amount": 62500,
+      "expected_total_amount": 1554000,
+      "expected_interest": 54000,
+      "reasons": [
+        {
+          "reason_title": "높은 금리 혜택",
+          "reason_detail": "최대 연 7.20%의 우대금리로 높은 수익 기대",
+          "benefit_description": "시중 평균보다 높은 금리로 안정적인 수익 창출 가능"
+        }
+      ],
+      "fit_analysis": "월 62,500원 수준의 적립 계획에 적합한 24개월 적금으로, 목돈 마련에 효과적입니다."
+    }
+  ],
+  "portfolio_suggestion": "균형 포트폴리오: 정기예금과 적금을 50:50으로 구성하여 안정성과 수익성을 균형있게 추구하시기 바랍니다.",
+  "total_expected_benefit": 706000,
+  "investment_strategy": "현재 지출 패턴을 기반으로 한 분석 결과, 보통 성향에 맞는 상품 조합으로 연 평균 수익률 7.06%를 기대할 수 있습니다.",
+  "cautions": [
+    "금리는 시장 상황에 따라 변동될 수 있습니다.",
+    "우대 조건을 충족하지 못할 경우 기본 금리가 적용됩니다."
+  ]
+}
+```
+
+</details>
+
+### **추가 API 엔드포인트**
+
+| 엔드포인트 | 메소드 | 설명 |
+|-----------|--------|------|
+| `/products/time-deposits` | GET | 모든 정기예금 상품 목록 조회 |
+| `/products/savings` | GET | 모든 적금 상품 목록 조회 |
+| `/ai-recommend` | POST | AI 전용 상품 추천 (OpenAI 기반) |
 
 ---
 

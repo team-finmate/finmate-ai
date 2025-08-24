@@ -1,6 +1,10 @@
 from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
 
+# 거래 내역 요청 스키마
+class TransactionAnalysisRequest(BaseModel):
+    transactions: List[Dict[str, Any]]
+
 # Pydantic 모델 정의
 # API 요청 본문의 JSON 데이터 구조를 정의합니다.
 class Transaction(BaseModel):

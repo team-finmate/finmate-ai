@@ -43,6 +43,26 @@ class TopExpense(BaseModel):
     amount: int
     category: str
 
+# 소비습관 피드백 스키마
+class SpendingFeedback(BaseModel):
+    spending_tips: List[str]
+    goal_progress: str
+    positive_changes: List[str]
+    improvement_guide: List[str]
+
+# 월간 비교 카테고리 스키마
+class MonthlyComparisonCategory(BaseModel):
+    category: str
+    current_amount: int
+    previous_amount: int
+    change_amount: int
+    change_rate: float
+
+# 월간 비교 스키마
+class MonthlyComparison(BaseModel):
+    increased_categories: List[MonthlyComparisonCategory]
+    decreased_categories: List[MonthlyComparisonCategory]
+
 # 절약 요약 스키마
 class SavingSummary(BaseModel):
     total_saving: int
@@ -60,5 +80,7 @@ class AnalysisResponse(BaseModel):
     spending_type: str
     risk_patterns: List[str]
     overspending_categories: List[str]
+    spending_feedback: SpendingFeedback
+    monthly_comparison: MonthlyComparison
     saving_suggestions: Dict[str, SavingLevel]
     saving_summary: Optional[Dict[str, SavingSummary]] = None

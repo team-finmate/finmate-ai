@@ -296,6 +296,22 @@ SYSTEM_INSTRUCTIONS = """
   "spending_type": "소비 패턴 요약 (예: 외식·배달 중심, 주말 지출 집중)",
   "risk_patterns": ["위험 패턴 목록"],
   "overspending_categories": ["과소비 카테고리 목록"],
+  "spending_feedback": {
+    "spending_tips": ["실용적인 지출 관리 팁 목록"],
+    "goal_progress": "목표 달성 속도 및 진행 상황 평가",
+    "positive_changes": ["이전 달 대비 잘한 점 칭찬 목록"],
+    "improvement_guide": ["소비 습관 개선을 위한 구체적 가이드"]
+  },
+  "monthly_comparison": {
+    "increased_categories": [
+      {"category": "카테고리명", "current_amount": 0, "previous_amount": 0, "change_amount": 0, "change_rate": 0.0},
+      {"category": "카테고리명", "current_amount": 0, "previous_amount": 0, "change_amount": 0, "change_rate": 0.0}
+    ],
+    "decreased_categories": [
+      {"category": "카테고리명", "current_amount": 0, "previous_amount": 0, "change_amount": 0, "change_rate": 0.0},
+      {"category": "카테고리명", "current_amount": 0, "previous_amount": 0, "change_amount": 0, "change_rate": 0.0}
+    ]
+  },
   "saving_suggestions": {
     "강한절약": {
       "level": "🔥 강한 절약",
@@ -370,11 +386,51 @@ SYSTEM_INSTRUCTIONS = """
 낮음: 여행/숙박, 의료/건강/피트니스, 교육, 보험/세금/기타금융
 제외: 이체, 카테고리 없음
 
+[소비습관 피드백 가이드라인]
+spending_tips:
+- 현재 소비 패턴에 맞는 실용적 관리 방법 제시
+- "가계부 앱 활용", "예산 한도 설정", "할인 혜택 활용" 등 구체적 팁
+- 3-5개의 실행 가능한 조언
+
+goal_progress:
+- 절약 목표 대비 현재 진행 상황 평가
+- "목표 달성까지 XX개월", "현재 XX% 달성" 등 구체적 수치
+- 격려와 동기부여 포함
+
+positive_changes:
+- 이전 달 대비 개선된 소비 습관 칭찬
+- "XX 카테고리 XX원 절약", "새벽 소비 XX% 감소" 등
+- 2-3개의 긍정적 변화 강조
+
+improvement_guide:
+- 단계별 소비 습관 개선 방법 제시
+- "1단계: XX, 2단계: XX" 형태로 구조화
+- 3-4개의 점진적 개선 방안
+
+[월간 비교 분석 가이드라인]
+increased_categories:
+- 이전 달 대비 증가 상위 2개 카테고리
+- 증가 금액과 증가율(%) 정확히 계산
+- 증가 원인 추정 및 주의 메시지
+
+decreased_categories:
+- 이전 달 대비 감소 상위 2개 카테고리  
+- 감소 금액과 감소율(%) 정확히 계산
+- 절약 성과 칭찬 및 격려 메시지
+
 [분석 기준]
 - category_breakdown: 'keyword_hints'와 'amount_hints'를 종합하여 16개 카테고리별 금액과 비율 계산
 - spending_type: 'weekday_type', 'time_bucket' 정보를 활용한 소비 특성 요약
 - risk_patterns: 새벽 시간대 소비, 고액 결제, 반복적 소비 패턴 등 식별
 - overspending_categories: 평균 대비 과도한 지출 카테고리
+- spending_feedback: 개인화된 소비습관 피드백 제공
+  * spending_tips: 현재 소비 패턴에 맞는 실용적 관리 팁 (3-5개)
+  * goal_progress: 절약 목표 달성도 및 속도 평가
+  * positive_changes: 이전 달 대비 개선된 점 격려 (2-3개)
+  * improvement_guide: 단계별 소비 습관 개선 방법 (3-4개)
+- monthly_comparison: 이전 달 대비 지출 변동 분석
+  * increased_categories: 증가 상위 2개 카테고리 (금액, 증가율 포함)
+  * decreased_categories: 감소 상위 2개 카테고리 (금액, 감소율 포함)
 - saving_suggestions: 각 레벨별로 실제 금액과 구체적인 방법을 포함한 맞춤 절약 전략
 
 [주의사항]
@@ -386,6 +442,9 @@ SYSTEM_INSTRUCTIONS = """
 - 절약 금액 계산 시 현재 지출 패턴과 빈도를 고려
 - 데이터가 부족한 경우 보수적으로 분석
 - 이체, 보험/세금/기타금융은 절약 제안에서 제외
+- spending_feedback은 긍정적이고 격려하는 톤으로 작성
+- monthly_comparison에서 이전 달 데이터가 없는 경우 null 또는 빈 배열로 처리
+- 모든 피드백과 가이드는 구체적이고 실행 가능한 내용으로 작성
 """
 
 # 절약 제안 계산 헬퍼 함수들

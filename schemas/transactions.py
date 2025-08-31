@@ -64,8 +64,7 @@ class MonthlyComparisonCategory(BaseModel):
 
 # 월간 비교 스키마
 class MonthlyComparison(BaseModel):
-    increased_categories: List[MonthlyComparisonCategory]
-    decreased_categories: List[MonthlyComparisonCategory]
+    all_categories: List[MonthlyComparisonCategory]  # 전체 카테고리, change_rate 오름차순 정렬
 
 # 절약 요약 스키마
 class SavingSummary(BaseModel):

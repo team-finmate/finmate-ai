@@ -303,12 +303,7 @@ SYSTEM_INSTRUCTIONS = """
     "improvement_guide": ["소비 습관 개선을 위한 구체적 가이드"]
   },
   "monthly_comparison": {
-    "increased_categories": [
-      {"category": "카테고리명", "current_amount": 0, "previous_amount": 0, "change_amount": 0, "change_rate": 0.0},
-      {"category": "카테고리명", "current_amount": 0, "previous_amount": 0, "change_amount": 0, "change_rate": 0.0}
-    ],
-    "decreased_categories": [
-      {"category": "카테고리명", "current_amount": 0, "previous_amount": 0, "change_amount": 0, "change_rate": 0.0},
+    "all_categories": [
       {"category": "카테고리명", "current_amount": 0, "previous_amount": 0, "change_amount": 0, "change_rate": 0.0}
     ]
   },
@@ -408,15 +403,13 @@ improvement_guide:
 - 3-4개의 점진적 개선 방안
 
 [월간 비교 분석 가이드라인]
-increased_categories:
-- 이전 달 대비 증가 상위 2개 카테고리
-- 증가 금액과 증가율(%) 정확히 계산
-- 증가 원인 추정 및 주의 메시지
-
-decreased_categories:
-- 이전 달 대비 감소 상위 2개 카테고리  
-- 감소 금액과 감소율(%) 정확히 계산
-- 절약 성과 칭찬 및 격려 메시지
+all_categories:
+- 현재 달에 지출이 있는 모든 카테고리를 포함 (금액이 0인 카테고리 제외)
+- 이전 달 데이터가 있는 경우: 실제 증감 금액과 증감율(%) 정확히 계산
+- 이전 달 데이터가 없는 경우: previous_amount=0, change_amount=current_amount, change_rate=100.0으로 설정
+- change_rate 기준 오름차순 정렬 (가장 감소한 카테고리부터 가장 증가한 카테고리 순)
+- 최소 3개 이상의 카테고리 포함 (지출이 있는 모든 카테고리)
+- 증감 구분 없이 전체 지출 변동 패턴을 한눈에 파악 가능하도록 구성
 
 [분석 기준]
 - category_breakdown: 'keyword_hints'와 'amount_hints'를 종합하여 16개 카테고리별 금액과 비율 계산
@@ -429,8 +422,10 @@ decreased_categories:
   * positive_changes: 이전 달 대비 개선된 점 격려 (2-3개)
   * improvement_guide: 단계별 소비 습관 개선 방법 (3-4개)
 - monthly_comparison: 이전 달 대비 지출 변동 분석
-  * increased_categories: 증가 상위 2개 카테고리 (금액, 증가율 포함)
-  * decreased_categories: 감소 상위 2개 카테고리 (금액, 감소율 포함)
+  * all_categories: 지출이 있는 전체 카테고리의 증감 정보를 change_rate 기준 오름차순 정렬
+    - 현재 달 지출이 있는 모든 카테고리 포함 (amount > 0)
+    - 이전 달 데이터가 없으면 previous_amount=0, change_rate=100.0으로 설정
+    - 최소 3개 이상 카테고리 포함하여 전체 지출 패턴 분석 가능
 - saving_suggestions: 각 레벨별로 실제 금액과 구체적인 방법을 포함한 맞춤 절약 전략
 
 [주의사항]
@@ -443,7 +438,9 @@ decreased_categories:
 - 데이터가 부족한 경우 보수적으로 분석
 - 이체, 보험/세금/기타금융은 절약 제안에서 제외
 - spending_feedback은 긍정적이고 격려하는 톤으로 작성
-- monthly_comparison에서 이전 달 데이터가 없는 경우 null 또는 빈 배열로 처리
+- monthly_comparison의 all_categories는 현재 달 지출이 있는 모든 카테고리 필수 포함
+  * 이전 달 데이터가 없는 경우에도 current_amount > 0인 모든 카테고리 포함
+  * 카테고리 개수가 적어도 전체 지출 패턴 파악을 위해 모든 지출 카테고리 표시
 - 모든 피드백과 가이드는 구체적이고 실행 가능한 내용으로 작성
 """
 

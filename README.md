@@ -31,7 +31,7 @@ FinMate AI는 개인의 결제내역을 **16개 카테고리**로 분석하고, 
 | **위험 패턴 감지** | 새벽 소비, 고액 결제, 반복 소비 등 |
 | **트렌드 분석** | 상승/하락/안정 트렌드 및 예측 |
 | **🆕 소비습관 피드백** | 개인화된 지출 팁, 목표 달성도, 개선 가이드 |
-| **🆕 월간 비교 분석** | 이전 달 대비 증가/감소 상위 카테고리 |
+| **🆕 월간 비교 분석** | 전체 카테고리별 증감 정보 (change_rate 오름차순) |
 
 ### 🏦 **금융상품 추천 시스템** 🆕
 
@@ -137,15 +137,12 @@ FinMate AI는 단순한 분석을 넘어 **개인화된 피드백**을 제공합
 
 이전 달과 비교하여 **지출 변동을 한눈에** 파악할 수 있습니다:
 
-#### 📈 **증가 카테고리 (상위 2개)**
-- 이전 달 대비 지출이 증가한 카테고리
-- 증가 금액과 증가율(%) 정확히 표시
-- 증가 원인 분석 및 주의 메시지
-
-#### 📉 **감소 카테고리 (상위 2개)**
-- 이전 달 대비 지출이 감소한 카테고리
-- 감소 금액과 감소율(%) 정확히 표시
-- 절약 성과 칭찬 및 격려 메시지
+#### � **전체 카테고리 변동 분석**
+- 모든 카테고리의 이전 달 대비 지출 변동 정보
+- **change_rate 기준 오름차순 정렬** (가장 감소한 카테고리부터 가장 증가한 카테고리까지)
+- 증가/감소 구분 없이 전체 카테고리 포함
+- 변동 금액과 변동율(%) 정확히 표시
+- 절약 성과 칭찬 및 주의 메시지 제공
 
 ---
 
@@ -305,22 +302,27 @@ Content-Type: application/json
     ]
   },
   "monthly_comparison": {
-    "increased_categories": [
-      {
-        "category": "식비",
-        "current_amount": 320000,
-        "previous_amount": 280000,
-        "change_amount": 40000,
-        "change_rate": 14.3
-      }
-    ],
-    "decreased_categories": [
+    "all_categories": [
       {
         "category": "교통/자동차",
         "current_amount": 60000,
         "previous_amount": 80000,
         "change_amount": -20000,
         "change_rate": -25.0
+      },
+      {
+        "category": "카페/간식",
+        "current_amount": 150000,
+        "previous_amount": 150000,
+        "change_amount": 0,
+        "change_rate": 0.0
+      },
+      {
+        "category": "식비",
+        "current_amount": 320000,
+        "previous_amount": 280000,
+        "change_amount": 40000,
+        "change_rate": 14.3
       }
     ]
   },

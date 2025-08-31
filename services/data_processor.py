@@ -1,6 +1,7 @@
 # services/data_processor.py
 import datetime as dt
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Tuple
+from collections import defaultdict
 from core.config import (
     WEEKEND_DAYS, WEEKDAY_BUCKETS, WEEKEND_BUCKETS, 
     AMOUNT_HINTS, KEYWORD_HINTS, RISK_PATTERNS
@@ -56,23 +57,107 @@ def keyword_hint(merchant: str, category: str) -> List[str]:
     return list(hits)
 
 
+def separate_transactions_by_month(txns: List[Dict[str, Any]]) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+    """
+    거래 내역을 월별로 분리하여 현재 달과 이전 달로 구분
+    
+    Args:
+        txns: 전체 거래 내역 리스트
+        
+    Returns:
+        tuple: (현재 달 거래, 이전 달 거래)
+    """
+    # 월별로 거래 그룹화
+    monthly_groups = defaultdict(list)
+    
+    for txn in txns:
+        # date에서 년-월 추출
+        date_str = txn.get("date", "")
+        if date_str:
+            try:
+                # "YYYY-MM-DD" 형식에서 "YYYY-MM" 추출
+                year_month = "-".join(date_str.split("-")[:2])
+                monthly_groups[year_month].append(txn)
+            except (ValueError, IndexError):
+                # 날짜 형식이 잘못된 경우 현재 달로 분류
+                current_month = dt.date.today().strftime("%Y-%m")
+                monthly_groups[current_month].append(txn)
+    
+    # 월별 정렬 (최신 순)
+    sorted_months = sorted(monthly_groups.keys(), reverse=True)
+    
+    if len(sorted_months) == 0:
+        return [], []
+    elif len(sorted_months) == 1:
+        # 한 달 데이터만 있는 경우
+        return monthly_groups[sorted_months[0]], []
+    else:
+        # 두 달 이상 데이터가 있는 경우
+        current_month = sorted_months[0]
+        previous_month = sorted_months[1]
+        return monthly_groups[current_month], monthly_groups[previous_month]
+
+
+def normalize_category(category: str) -> str:
+    """카테고리를 16개 표준 카테고리로 정규화"""
+    category_mapping = {
+        # 기존 카테고리를 표준 카테고리로 매핑
+        "배달음식": "식비",
+        "문화/여가": "취미/여가",
+        "카페": "카페/간식",
+        "대중교통": "교통/자동차",
+        "쇼핑몰": "쇼핑",
+        "편의점": "편의점/마트/잡화",
+        "마트": "편의점/마트/잡화",
+        "병원": "의료/건강/피트니스",
+        "약국": "의료/건강/피트니스",
+        "주유소": "교통/자동차",
+        "통신비": "주거/통신",
+        "구독서비스": "주거/통신",
+        "헬스장": "의료/건강/피트니스",
+        "피트니스": "의료/건강/피트니스",
+        "미용실": "미용",
+        "네일샵": "미용",
+        "학원": "교육",
+        "온라인강의": "교육",
+        "항공료": "여행/숙박",
+        "호텔": "여행/숙박",
+        "펜션": "여행/숙박",
+        "보험료": "보험/세금/기타금융",
+        "세금": "보험/세금/기타금융",
+        "계좌이체": "이체",
+        "송금": "이체",
+        "ATM": "이체",
+        "세탁소": "생활",
+        "택배": "생활",
+        "우체국": "생활"
+    }
+    
+    # 매핑된 카테고리가 있으면 반환, 없으면 원본 반환
+    return category_mapping.get(category, category)
+
+
 def enrich_transactions(txns: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """거래 내역을 보강하여 시간대 버킷, 금액 힌트, 키워드 힌트 추가"""
     enriched = []
     
     for t in txns:
+        # 카테고리 정규화
+        normalized_category = normalize_category(t.get("category", "카테고리 없음"))
+        
         # 시간대 버킷 할당
         tb = assign_time_bucket(t["date"], t["time"])
         
         # 금액 힌트 생성
         a_hints = amount_hint(t["amount"])
         
-        # 키워드 힌트 생성
-        k_hints = keyword_hint(t.get("merchant", ""), t.get("category", ""))
+        # 키워드 힌트 생성 (정규화된 카테고리 사용)
+        k_hints = keyword_hint(t.get("merchant", ""), normalized_category)
         
         # 원본 데이터에 보강 데이터 추가
         enriched.append({
             **t,
+            "category": normalized_category,  # 정규화된 카테고리로 교체
             **tb,
             "amount_hints": a_hints,
             "keyword_hints": k_hints

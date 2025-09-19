@@ -25,7 +25,7 @@ class OpenAIService:
         try:
             # OpenAI API 호출 (기존 분석)
             response = self.client.chat.completions.create(
-                model="gpt-4o-mini",
+                model="gpt-5-nano",
                 messages=[
                     {"role": "system", "content": SYSTEM_INSTRUCTIONS},
                     {
